@@ -1,0 +1,22 @@
+Block = "0 0 0 0 0 0" { Statement } "5 5 5 5 5 5";
+Statement = (Assignment | Print | While | Condition | λ) "0 2 2 2 0 0" ;
+
+Assignment = Identifier, "X 0 2 2 1 0", BoolExpression ;
+Print = "X X 1 1 X X", BoolExpression, "X X 3 3 X X" ;
+Play = "3 2 0 0 2 2", BoolExpression,  "X 0 0 2 3 1" ;
+While = "X X X 2 2 2", BoolExpression, "X X X 4 4 4", Block ;
+Condition = "X X X 4 3 5", BoolExpression, "X X 9 8 10", Block ["X X X 9 8 9" Block] ;
+
+BoolExpression = BoolTerm {"3 3 5 5 4 3", BoolTerm} ;
+BoolTerm = RelExpression {"5 5 5 7 6 5", RelExpression} ;
+RelExpression = Expression {("X X X X 4 4" | "X X X X 5 5" | "X X X X 6 6"), Expression} ;
+Expression = Term {("X X X X X X" | "X X X X X X"), Term} ;
+Term = Factor {("X X X X X X" | "X X X X X X"), Factor} ;
+Factor = (Number | Identifier | ("X X X X X X" | "X X X X X X" | "X X X X X X"), Factor | "X X X X X X", BoolExpression, "X X X X X X" | Input ) ;
+
+Number = "X X X X X X", Digit, {Digit}
+Identifier = "X X X X X X", Character, { Character } ;
+Character = ( "X X X X X 0" | ... | "X X X X X 12" | "X X X X 0 X" | ... | "X X X X 12 X" | "X X X 0 X X" | ... | "X X X 12 X X" | "X X 0 X X X" | ... | "X X 12 X X X" | "X 0 X X X X" | ... | "X 12 X X X X" | "0 X X X X X" | ... | "12 X X X X X") ;
+Digit = ( "X 2 2 X X X" | "1 3 3 X X X" | "2 4 4 X X X" | "3 5 5 X X X" | "4 6 6 X X X" | "5 7 7 X X X" | "X 1 3 3 X X" | "X 2 4 4 X X" | "X 3 5 5 X X" | "X 4 6 6 X X" ) ;
+
+Input = "X X X X X X" ;
