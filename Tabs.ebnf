@@ -1,22 +1,42 @@
-Block = "0 0 0 0 0 0" { Statement } "5 5 5 5 5 5";
-Statement = (Assignment | Print | While | Condition | λ) "0 2 2 2 0 0" ;
+Block = "{" { Statement } "}";
+Statement = (Assignment | Print | While | Condition | Play | λ) ";" ;
 
-Assignment = Identifier, "X 0 2 2 1 0", BoolExpression ;
-Print = "X X 1 1 X X", BoolExpression, "X X 3 3 X X" ;
-Play = "3 2 0 0 2 2", BoolExpression,  "X 0 0 2 3 1" ;
-While = "X X X 2 2 2", BoolExpression, "X X X 4 4 4", Block ;
-Condition = "X X X 4 3 5", BoolExpression, "X X 9 8 10", Block ["X X X 9 8 9" Block] ;
+Assignment = Identifier, "=", BoolExpression ;
+SongAssignment = SongIdentifier, "=", SongExpression ;
 
-BoolExpression = BoolTerm {"3 3 5 5 4 3", BoolTerm} ;
-BoolTerm = RelExpression {"5 5 5 7 6 5", RelExpression} ;
-RelExpression = Expression {("X X X X 4 4" | "X X X X 5 5" | "X X X X 6 6"), Expression} ;
-Expression = Term {("X X X X X X" | "X X X X X X"), Term} ;
-Term = Factor {("X X X X X X" | "X X X X X X"), Factor} ;
-Factor = (Number | Identifier | ("X X X X X X" | "X X X X X X" | "X X X X X X"), Factor | "X X X X X X", BoolExpression, "X X X X X X" | Input ) ;
+Print = "print", "(", ( BoolExpression | SongExpression ), ")" ;
+Play = "play", "(", SongExpression, ")" ;
 
-Number = "X X X X X X", Digit, {Digit}
-Identifier = "X X X X X X", Character, { Character } ;
-Character = ( "X X X X X 0" | ... | "X X X X X 12" | "X X X X 0 X" | ... | "X X X X 12 X" | "X X X 0 X X" | ... | "X X X 12 X X" | "X X 0 X X X" | ... | "X X 12 X X X" | "X 0 X X X X" | ... | "X 12 X X X X" | "0 X X X X X" | ... | "12 X X X X X") ;
-Digit = ( "X 2 2 X X X" | "1 3 3 X X X" | "2 4 4 X X X" | "3 5 5 X X X" | "4 6 6 X X X" | "5 7 7 X X X" | "X 1 3 3 X X" | "X 2 4 4 X X" | "X 3 5 5 X X" | "X 4 6 6 X X" ) ;
 
-Input = "X X X X X X" ;
+While = "(", BoolExpression, ")", Block ;
+Condition = "if", "(", BoolExpression, ")", Block ["else" Block] ;
+
+BoolExpression = BoolTerm {"or", BoolTerm} ;
+BoolTerm = RelExpression {"and", RelExpression} ;
+RelExpression = ( Expression | SongExpression ) {("==" | "<" | ">" | "<=" | ">="), ( Expression | SongExpression)} ;
+
+
+Expression = Term {("+" | "-"), Term} ;
+Term = Factor {("*" | "/"), Factor} ;
+Factor = (Number | Identifier | ("+" | "-" | "!"), Factor | "(", BoolExpression, ")" | Input ) ;
+
+SongExpression = ( SongTerm | SongTermAlt ) {("++" | "--"), ( SongTerm | SongTermAlt )} ;
+
+SongTerm = SongFactor {("**"), Factor} ;
+SongTermAlt = Factor {("**"), SongFactor} ;
+
+SongFactor = ( Song | SongIdentifier | "(", SongExpression, ")" ) ;
+
+Number = Digit, {Digit}
+SongIdentifier = UpperLetter, { Digit | UpperLetter } ;
+Identifier = { Letter | UpperLetter }, { Letter | UpperLetter | Digit }, Letter, { Letter | UpperLetter | Digit } ;
+Song = '"', {Tab}, '"'
+
+UpperLetter = ( A | ... | Z )
+Letter = ( a | ... | z ) ;
+
+Tab = "|", Sring [Digit], "-", Sring [Digit], "-", Sring [Digit], "-", Sring [Digit], "-", Sring [Digit], "-", Sring [Digit], "|"
+Digit = ( 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 ) ;
+String = ( 0 | 1 | 2)
+
+Input = "get" ;
