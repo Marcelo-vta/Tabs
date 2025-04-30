@@ -1,5 +1,5 @@
 Block = "{" { Statement } "}";
-Statement = (Assignment | Print | While | Condition | Play | λ) ";" ;
+Statement = (Assignment | SongAssignment | Print | While | Condition | Play | λ) ";" ;
 
 Assignment = Identifier, "=", BoolExpression ;
 SongAssignment = SongIdentifier, "=", SongExpression ;
