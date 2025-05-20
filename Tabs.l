@@ -1,146 +1,83 @@
-get {
-    return INPUT;
-}
+%{
+#include "Tabs.tab.h"
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-play {
-    return PLAY;
-}
+struct symtab *symlook(char *s);
 
-print {
-    return PRINT;
-}
+%}
 
-if {
-    return IF;
-}
+%option noyywrap nounput noinput
 
-else {
-    return ELSE;
-}
+%%
 
-or {
-    return OR;
-}
+"get"           { return GET; }
+"play"          { return PLAY; }
+"print"         { return PRINT; }
+"if"            { return IF; }
+"else"          { return ELSE; }
+"while"         { return WHILE; }
 
-and {
-    return AND;
-}
+"||"            { return OR; }
+"&&"            { return AND; }
 
+":decat:"       { return DECAT; }
+":concat:"      { return CONCAT; }
+":pow:"         { return POWER; }
 
-( \|[0-2][0-9](-[0-2][0-9]){5}\| ) {
-    char clean_val[32];
-    strncpy(clean_val, yytext + 2, strlen(yytext) - 4);
-    clean_val[strlen(yytext) - 4] = '\0';
+"=="            { return EQ; }
+">="            { return GE; }
+"<="            { return LE; }
 
-    struct symtab *sp = symlook(clean_val);
-    yyval.symp = sp;
-    return TAB;
-}
+">"             { return '>'; }
+"<"             { return '<'; }
+"="             { return '='; }
+"+"             { return '+'; }
+"-"             { return '-'; }
+"*"             { return '*'; }
+"/"             { return '/'; }
+"!"             { return '!'; }
 
-[A-Z][A-Z0-9]* {
-    struct symtab *sp = symlook(yytext);
-    yylval.symp = sp;
-    return SONG_IDENTIFIER;
-}
+"("             { return '('; }
+")"             { return ')'; }
+"{"             { return '{'; }
+"}"             { return '}'; }
+";"             { return ';'; }
 
-[a-zA-Z][a-zA-Z0-9]* {
-    struct symtab *sp = symlook(yytext);
-    yylval.symp = sp;
-    return IDENTIFIER;
-}
+[0-9]+("."[0-9]+)?  {
+                        yylval.dval = atof(yytext);
+                        return NUMBER;
+                    }
 
-[A-Z]+ {
-    struct symtab *sp = symlook(yytext);
-    yylval.symp = sp;
-    return WORD;
-}
+[ \t\n]+        { }
 
-[0-9]+ {
-    yyval.dval = atof(yytext);
-    return NUMBER;
-}
+\"[^\"\n]*\"    {
+                        char clean_val[128];
+                        int len = yyleng - 2;
+                        if (len < 0) len = 0;
 
+                        if (len < sizeof(clean_val)) {
+                            strncpy(clean_val, yytext + 1, len);
+                            clean_val[len] = '\0';
+                            yylval.symp = symlook(clean_val);
+                            return TAB;
+                        } else {
+                            fprintf(stderr, "Lexical Error: TAB string too long: %s\n", yytext);
+                            return YYerror;
+                        }
+                    }
 
-\+\+ {
-    return SONG_OPERATOR_CONCAT;
-}
+[A-Z_][A-Z0-9_]* { yylval.symp = symlook(yytext); return SONG_IDENTIFIER; }
 
--- {
-    return SONG_OPERATOR_REMOVE;
-}
+[a-z_][a-z0-9_]* { yylval.symp = symlook(yytext); return WORD; }
 
-\*\* {
-    return SONG_OPERATOR_MULT;
-}
-
-
-\+ {
-    return OPERATOR_SUM;
-}
-
-- {
-    return OPERATOR_MINUS;
-}
-
-\* {
-    return OPERATOR_MULT;
-}
-
-/ {
-    return OPERATOR_DIV;
-}
-
-! {
-    return OPERATOR_NEG;
-}
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.symp = symlook(yytext); return IDENTIFIER; }
 
 
-\( {
-    return OPEN_PAR;
-}
+.                   {
+                        fprintf(stderr, "Lexical Error: Unrecognized character '%c'\n", yytext[0]);
+                        return YYerror;
+                    }
 
-\) {
-    return CLOSE_PAR;
-}
-
-\{ {
-    return OPEN_CB;
-}
-
-\} {
-    return CLOSE_CB;
-}
-
-
-" {
-    return SONG_DELIMITER;
-}
-
-
-== {
-    return BOOL_OPERATOR_EQUALS;
-}
-
-> {
-    return BOOL_OPERATOR_GREATER;
-}
-
-< {
-    return BOOL_OPERATOR_LESS;
-}
-
->= {
-    return BOOL_OPERATOR_GREATEROREQUAL;
-}
-
-<= {
-    return BOOL_OPERATOR_LESSOREQUAL;
-}
-
-
-= {
-    return ASSIGN;
-}
-
-
-. { return yytext[0]; }
+%%
