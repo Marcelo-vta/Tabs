@@ -5,11 +5,10 @@ from SymbolTable import SymbolTable
 
 if __name__ == "__main__":
     
+    filename = sys.argv[1]
 
     # filename = "test.Tabs"
     # filename = "smoke_on_the_water.Tabs"
-    
-    filename = sys.argv[1]
 
     try:
         with open(filename, 'r', encoding='utf-8') as file:

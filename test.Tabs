@@ -1,6 +1,8 @@
 {
 
-    rep = get();
+    // Código para testar e entender as features da linguagem
+
+    rep = get(); // get() para pegar inputs do usuário
 
     A = "|0-2-2-X-X-X|";
     B = "|1-3-3-X-X-X|";
