@@ -1,0 +1,20 @@
+{
+    A1 = "|3-5-5-X-X-X|";
+    A2 = "|6-8-8-X-X-X|";
+    A3 = "|X-3-5-5-X-X|";
+    A4 = "|X-4-6-6-X-X|";
+
+    A1_B = A1 ++ BLANK;
+    A2_B = A2 ++ BLANK;
+    A3_B = A3 ++ BLANK;
+    A4_B = A4 ++ BLANK;
+
+    RIFF_P1 = A1_B ++ A2_B ++ A3_B ++ BLANK;
+    RIFF_P2 = A1_B ++ A2_B ++ A4 ++ A3_B ++ (BLANK ** 2);
+
+    RIFF_END = A2_B ++ A1_B;
+
+    SONG = RIFF_P1 ++ RIFF_P2 ++ RIFF_P1 ++ RIFF_END;
+
+    play(SONG);
+}
