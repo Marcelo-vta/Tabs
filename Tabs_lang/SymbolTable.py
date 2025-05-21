@@ -1,7 +1,9 @@
 from var import Var
 
 class SymbolTable():
-    symbols = {}
+    symbols = {
+        "BLANK": Var("song", [["X","X","X","X","X","X"]]),
+    }
 
     def setSymbol(self, key, value):
         self.symbols[key] = value

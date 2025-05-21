@@ -329,6 +329,21 @@ class Parser:
 
             self.tokenizer.selectNext()
 
+        elif token.type == "PLAY":
+            self.tokenizer.selectNext()
+
+            if self.tokenizer.next.type != "OPEN_PAR":
+                raise SyntaxError("Unproper use of play, proper: play(<song>)")
+            self.tokenizer.selectNext()
+        
+            
+            node = Play([self.parseBoolExp()], False)
+
+            if self.tokenizer.next.type != "CLOSE_PAR":
+                raise SyntaxError("Unproper use of play, proper: play(<song>)")
+
+            self.tokenizer.selectNext()
+
         elif token.type == "IF":
             self.tokenizer.selectNext()
 

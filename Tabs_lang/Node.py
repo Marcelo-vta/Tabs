@@ -1,5 +1,6 @@
 from var import Var
 from utils import printSong
+from Play import play
 
 class Node():
     def __init__(self, children, value):
@@ -173,6 +174,15 @@ class Assignment(Node):
       
 class NoOp(Node):
     pass
+
+class Play(Node):
+    def Evaluate(self, symbolTable):
+        child = self.children[0].Evaluate(symbolTable)
+
+        if child.type == "song":
+            
+            play(child.value)
+            
 
 class Print(Node):
 

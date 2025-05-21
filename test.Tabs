@@ -12,7 +12,7 @@
     while (i < rep){
         SONG = SONG ++ A ++ B ++ C;
         if (i == (rep - 1) ){
-            SONG = SONG ++ "|X-X-X-X-X-X|";
+            SONG = SONG ++ BLANK;
         }
         i = i + 1;
     }
@@ -33,5 +33,7 @@
 
     print(SONG == SONG2);
     print(SONG2 == SONG3);
+
+    play(SONG3);
 
 }
