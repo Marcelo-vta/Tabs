@@ -60,7 +60,7 @@ class Parser:
             else:
                 self.tokenizer.selectNext()
 
-        elif token.value == "GET":
+        elif token.type == "GET":
             self.tokenizer.selectNext()
             if self.tokenizer.next.value == "(":
                 node = Input([], None)
@@ -134,7 +134,7 @@ class Parser:
             while True:
                 if self.tokenizer.next.type == "SONG_IDENTIFIER":
                     children.append(Identifier([True], self.tokenizer.next.value))
-                else:
+                elif self.tokenizer.next.type == "TAB":
                     tab = self.parseTab()
                     children.append(tab)
 
@@ -186,8 +186,8 @@ class Parser:
             op = self.tokenizer.next
             self.tokenizer.selectNext()
 
-            if self.tokenizer.next.type in ["NUMBER","SONG_IDENTIFIER"]:
-                right = self.ParseFactor()
+            if self.tokenizer.next.type in ["NUMBER","IDENTIFIER"]:
+                right = self.parseFactor()
                 if factor:
                     raise Exception("operation between two numericals")
             else:
@@ -217,7 +217,7 @@ class Parser:
 
 
     def parseRelExp(self):
-        if self.tokenizer.next.type in ["IDENTIFIER", "NUMBER"]:
+        if self.tokenizer.next.type in ["IDENTIFIER", "NUMBER", "GET"]:
             node = self.parseExpression()
         else:
             node = self.parseSongExpression()
@@ -226,12 +226,10 @@ class Parser:
             op = self.tokenizer.next
             self.tokenizer.selectNext()
 
-            if self.tokenizer.next.type in ["IDENTIFIER", "NUMBER"]:
+            if self.tokenizer.next.type in ["IDENTIFIER", "NUMBER", "OPEN_PAR"]:
                 right = self.parseExpression()
             elif self.tokenizer.next.type == "SONG_IDENTIFIER":
                 right = self.parseSongExpression()
-
-            
 
             node = BinOp([node, right], op.value)
 

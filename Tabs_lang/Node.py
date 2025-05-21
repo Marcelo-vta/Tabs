@@ -76,6 +76,8 @@ class BinOp(Node):
                 return Var("bool", len(number.value) < len(song.value))
             if self.value == ">":
                 return Var("bool", len(number.value) > len(song.value))
+            if self.value == "**":
+                return Var("song", number.value * song.value)
         
         raise Exception(f"unsupported type {left.type} or {right.type} for operand {self.value}")
         
@@ -164,7 +166,7 @@ class Assignment(Node):
             VarDec([Var(None, id), self.children[1]], type).Evaluate(symbolTable)
         else:
             value = self.children[1].Evaluate(symbolTable)
-            symbolTable.setSymbolValue(id, value)
+            symbolTable.setSymbol(id, value)
 
 
       
@@ -207,7 +209,7 @@ class WhileLoop(Node):
 class Input(Node):
     
     def Evaluate(self, symbolTable):
-        return Var("i32", int(input()))
+        return Var("number", int(input()))
 
 
     
