@@ -320,9 +320,9 @@ class Parser:
             self.tokenizer.selectNext()
         
             if token.type == "PRINT":
-                node = Print([self.parseBoolExp()], None)
+                node = Print([self.parseBoolExp()], False)
             else:
-                node = Print([self.parseSongExpression()], None)
+                node = Print([self.parseSongExpression()], True)
 
             if self.tokenizer.next.type != "CLOSE_PAR":
                 raise SyntaxError("Unproper use of print, proper: print(<expression>)")

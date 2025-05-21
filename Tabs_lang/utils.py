@@ -17,3 +17,21 @@ def print_tree(node, prefix="", is_left=True):
         for i, child in enumerate(node.children):
             is_last = (i == len(node.children) - 1)  # Verifica se é o último filho
             print_tree(child, new_prefix, not is_last)
+
+def printSong(song):
+    songString = ''
+    songString += '"'
+
+    for tab in song:
+        songString += ' |'
+        for note in tab:
+            if note.isnumeric():
+                note = int(note)
+            songString += f' {note}'
+
+            songString += " -"
+        
+        songString = songString[:-1] + "|"
+
+    songString += ' "'
+    print(songString)

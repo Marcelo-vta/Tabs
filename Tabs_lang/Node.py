@@ -1,4 +1,5 @@
 from var import Var
+from utils import printSong
 
 class Node():
     def __init__(self, children, value):
@@ -179,9 +180,13 @@ class Print(Node):
         child = self.children[0].Evaluate(symbolTable)
 
         if child.type == "bool":
-            child.value = str(child.value).lower()
+            print(str(child.value).lower())
 
-        print(child.value)
+        elif child.type == "song":
+            printSong(child.value)
+
+        else:
+            print(child.value)
     
     
 class Conditional(Node):
@@ -210,25 +215,5 @@ class Input(Node):
     
     def Evaluate(self, symbolTable):
         return Var("number", int(input()))
-
-
-    
-
-
-    
-
-
-
-
-    
-            
-# number1 = IntVal(1)
-# number2 = IntVal(2)
-# number3 = IntVal(5)
-# unop = UnOp([number1], "-")
-# operator2 = BinOp([number2, number3], "*")
-# operator = BinOp([operator2, unop], "+")
-# mainNode = Node([operator], None)
-
             
 
