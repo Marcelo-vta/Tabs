@@ -175,7 +175,7 @@ class Parser:
         return node     
 
     def parseSongTerm(self):
-        if self.tokenizer.next.type in ["NUMBER","SONG_IDENTIFIER"]:
+        if self.tokenizer.next.type in ["NUMBER","IDENTIFIER"]:
             node = self.parseFactor()
             factor = True
         else:
@@ -206,7 +206,7 @@ class Parser:
         while self.tokenizer.next.type == "OPERATOR" and self.tokenizer.next.value in ["++", "--"]:
             op = self.tokenizer.next
             self.tokenizer.selectNext()
-            right = self.parseSong()
+            right = self.parseSongExpression()
 
             if op.value == "++":
                 node = BinOp([node, right], op.value)
