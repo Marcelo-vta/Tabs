@@ -33,7 +33,7 @@ class Tokenizer():
             return
 
         while c_char.isnumeric():
-            newToken.type = "number"
+            newToken.type = "NUMBER"
             newToken.value += c_char
             self.position += 1
             if self.position >= len(self.source):
@@ -44,82 +44,70 @@ class Tokenizer():
                 self.next = newToken
                 return
             
-        if c_char == "+":
-            newToken.type = "operator"
+        if c_char in ["+", "-", "*"]:
+            newToken.type = "OPERATOR"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
-            if self.source[self.position] == "+":
-                newToken.type = "concat"
+            if self.source[self.position] == c_char:
+                newToken.type = "OPERATOR"
                 newToken.value += c_char
                 self.next = newToken
                 self.position += 1
                 return
             return  
 
-        if c_char in ["-", "*", "/"]:
-            newToken.type = "operator"
+        if c_char in ["/"]:
+            newToken.type = "OPERATOR"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
         
         if c_char == "!":
-            newToken.type = "not"
+            newToken.type = "NOT"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
  
         if c_char == "(":
-            newToken.type = "openPrio"
+            newToken.type = "OPEN_PAR"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
         
         if c_char == ")":
-            newToken.type = "closePrio"
+            newToken.type = "CLOSE_PAR"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
         
         if c_char == "{":
-            newToken.type = "openBlock"
+            newToken.type = "OPEN_BRACKETS"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
         
         if c_char == "}":
-            newToken.type = "closeBlock"
+            newToken.type = "CLOSE_BRACKETS"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
         
         if c_char == '"':
-            newToken.type = "string"
-            newToken.value = ""
-            self.position += 1
-            c_char = self.source[self.position]
-            while c_char != '"':
-                newToken.value += c_char
-
-                self.position += 1
-                c_char = self.source[self.position]
-
-                if self.position >= len(self.source):
-                    raise Exception("Unclosed string")
-                
+            newToken.type = "QUOTE"
+            newToken.value = "QUOTE"
             self.next = newToken
             self.position += 1
-
             return
 
         if c_char.isalpha() or c_char == "_":
-            newToken.type = "identifier"
+            newToken.type = "IDENTIFIER"
             newToken.value = ""
             while c_char.isalnum() or c_char == "_":
                 newToken.value += c_char
@@ -132,50 +120,46 @@ class Tokenizer():
                 c_char = self.source[self.position]
                 if not (c_char.isalnum() or c_char == '_'):
                     if newToken.value == "print":
-                        newToken.type = "print"
-                    if newToken.value == "printf":
-                        newToken.type = "print"
+                        newToken.type = "PRINT"
+
+                    if newToken.value == "prints":
+                        newToken.type = "PRINT_SONG"
                         
                     if newToken.value == "if":
-                        newToken.type = "if"
+                        newToken.type = "IF"
                     if newToken.value == "else":
-                        newToken.type = "else"
+                        newToken.type = "ELSE"
                     if newToken.value == "while":
-                        newToken.type = "while"
+                        newToken.type = "WHILE"
+                    if newToken.value == "get":
+                        newToken.type = "GET"
+
+                    if newToken.value == "X":
+                        newToken.type = "UNPLAYED"
+
                     if newToken.value == "var":
-                        newToken.type = "setVar"
-                    if newToken.value == "reader":
-                        newToken.type = "read"
+                        newToken.type = "VAR"
 
-                    if newToken.value == "i32":
-                        newToken.type = "type"
-                    if newToken.value == "str":
-                        newToken.type = "type"
-                    if newToken.value == "bool":
-                        newToken.type = "type"
+                    if newToken.value == "play":
+                        newToken.type = "PLAY"
 
-                    if newToken.value == "true":
-                        newToken.type = "bool"
-                    if newToken.value == "false":
-                        newToken.type = "bool"
+                    if newToken.value == "and":
+                        newToken.type = "AND"
+                    if newToken.value == "or":
+                        newToken.type = "OR"
                     
+                    if newToken.value.isupper() and newToken.value != "X":
+                        newToken.type = "SONG_IDENTIFIER"
                     self.next = newToken
                     return
-                
-        if c_char == ":":
-            newToken.type = "atributte"
-            newToken.value = c_char
-            self.next = newToken
-            self.position += 1
-            return
             
         if c_char == "=":
-            newToken.type = "equals"
+            newToken.type = "EQUAL"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             if self.source[self.position] == "=":
-                newToken.type = "equalsTo"
+                newToken.type = "EQ"
                 newToken.value += c_char
                 self.next = newToken
                 self.position += 1
@@ -183,19 +167,19 @@ class Tokenizer():
             return
         
         if c_char == ";":
-            newToken.type = "endStatement"
+            newToken.type = "END_STATEMENT"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             return
         
         if c_char == "<":
-            newToken.type = "lessThan"
+            newToken.type = "LT"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             if self.source[self.position] == "=":
-                newToken.type = "lessOrEqualsTo"
+                newToken.type = "LTE"
                 newToken.value += "="
                 self.next = newToken
                 self.position += 1
@@ -203,41 +187,37 @@ class Tokenizer():
             return
         
         if c_char == ">":
-            newToken.type = "greaterThan"
+            newToken.type = "GT"
             newToken.value = c_char
             self.next = newToken
             self.position += 1
             if self.source[self.position] == "=":
-                newToken.type = "greaterOrEqualsTo"
+                newToken.type = "GTE"
                 newToken.value += "="
                 self.next = newToken
                 self.position += 1
                 return
             return
         
-        if c_char == "&":
-            if self.source[self.position+1] == "&":
-                newToken.type = "and"
-                newToken.value = "&&"
-                self.next = newToken
-                self.position += 2
-                return
+        if c_char == ",":
+            newToken.type = "COMMA"
+            newToken.value = c_char
+            self.next = newToken
+            self.position += 1
+            return
         
         if c_char == "|":
-            if self.source[self.position+1] == "|":
-                newToken.type = "or"
-                newToken.value = "||"
-                self.next = newToken
-                self.position += 2
-                return
-        
-
+            newToken.type = "TAB"
+            newToken.value = c_char
+            self.next = newToken
+            self.position += 1
+            return
         
         self.position += 1        
         self.selectNext()
 
 
-# tkn = Tokenizer('"teste tesudo" false true')
+# tkn = Tokenizer('"TESTE = |12|23|12|13|4 () Teste , " false true')
 # while tkn.next.type != "eof":
 #     print(tkn.next.type, " - ", tkn.next.value)
 #     tkn.selectNext()

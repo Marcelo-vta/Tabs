@@ -22,23 +22,15 @@ class BinOp(Node):
         left = self.children[0].Evaluate(symbolTable)
         right = self.children[1].Evaluate(symbolTable)
 
-        if left.type == "i32" and right.type == "i32":
+        if left.type == "number" and right.type == "number":
             if self.value == "-":
-                return Var("i32", left.value - right.value)
+                return Var("number", left.value - right.value)
             if self.value == "+":
-                return Var("i32", left.value + right.value)
+                return Var("number", left.value + right.value)
             if self.value == "*":
-                return Var("i32", left.value * right.value)
+                return Var("number", left.value * right.value)
             if self.value == "/":
-                return Var("i32", left.value // right.value)        
-            
-        if left.type == "bool" and right.type == "bool":
-            if self.value == "||":
-                return Var("bool", left.value or right.value)
-            if self.value == "&&":
-                return Var("bool", left.value and right.value)
-        
-        if left.type == right.type:
+                return Var("number", left.value // right.value)        
             if self.value == "==":
                 return Var("bool", left.value == right.value)
             if self.value == ">=":
@@ -49,14 +41,41 @@ class BinOp(Node):
                 return Var("bool", left.value < right.value)
             if self.value == ">":
                 return Var("bool", left.value > right.value)
+
+        if left.type == "song" and right.type == "song":
+            if self.value == "++":
+                return Var("song", left.value + right.value)
+            if self.value == "--":
+                return Var("song", [x for x in left.value if x not in right.value])
+            if self.value == "==":
+                return Var("bool", left.value == right.value)
+            if self.value == ">=":
+                return Var("bool", len(left.value) >= len(right.value))
+            if self.value == "<=":
+                return Var("bool", len(left.value) <= len(right.value))
+            if self.value == "<":
+                return Var("bool", len(left.value) < len(right.value))
+            if self.value == ">":
+                return Var("bool", len(left.value) > len(right.value))
+
+        if left.type != right.type:
+            if left.type == "song":
+                song = left
+                number = right
+            else:
+                song = right
+                number = left
         
-        if self.value == "++":
-            if left.type == "bool":
-                left.value = str(left.value).lower()
-            if right.type == "bool":
-                right.value = str(right.value).lower()
-            
-            return Var("str", str(left.value) + str(right.value))
+            if self.value == "==":
+                return Var("bool", number.value == len(song.value))
+            if self.value == ">=":
+                return Var("bool", len(number.value) >= len(song.value))
+            if self.value == "<=":
+                return Var("bool", len(number.value) <= len(song.value))
+            if self.value == "<":
+                return Var("bool", len(number.value) < len(song.value))
+            if self.value == ">":
+                return Var("bool", len(number.value) > len(song.value))
         
         raise Exception(f"unsupported type {left.type} or {right.type} for operand {self.value}")
         
@@ -68,23 +87,19 @@ class UnOp(Node):
     def Evaluate(self, symbolTable):
         child = self.children[0].Evaluate(symbolTable)
 
-        if child.type == "i32":
+        if child.type == "number":
             if self.value == "-":
-                return Var("i32", -child.value)
+                return Var("number", -child.value)
             if self.value == "+":
-                return Var("i32", +child.value)
-        
-        if child.type == "bool":        
-            if self.value == "!":
-                return Var("bool", not child.value)
-        
+                return Var("number", +child.value)
+            
         raise ValueError(f"unsupported type {child.type} for operand {self.value}")
     
             
 class IntVal(Node):
     
     def Evaluate(self, symbolTable):
-        return Var('i32' , int(self.value))
+        return Var('number' , int(self.value))
         
 class BoolVal(Node):
     
@@ -96,6 +111,18 @@ class StrVal(Node):
     def Evaluate(self, symbolTable):
         return Var('str' ,self.value)
     
+class Tab(Node):
+
+    def Evaluate(self, symbolTable):
+        return self.children
+
+class Song(Node):
+
+    def Evaluate(self, symbolTable):
+        tabs = []
+        for child in self.children:
+            tabs.append(child.Evaluate(symbolTable))
+        return Var('song', tabs)
         
 class Identifier(Node):
 
@@ -112,12 +139,10 @@ class VarDec(Node):
         if len(self.children) > 1:
             value = self.children[1].Evaluate(symbolTable)
         else:
-            if type == "i32":
-                value = Var("i32", 0)
-            if type == "str":
-                value = Var("str", "")
-            if type == "bool":
-                value = Var("bool", False)
+            if type == "number":
+                value = Var("number", 0)
+            if type == "song":
+                value = Var("song", [])
 
         if type != value.type:
             raise Exception("Unexpected type")
@@ -131,14 +156,16 @@ class Assignment(Node):
     
     def Evaluate(self, symbolTable):
         id = self.children[0].value
-        value = self.children[1].Evaluate(symbolTable)
+        type = "song" if self.children[0].children[0] else "number"
 
         try:
             symbolTable.getSymbol(id)
         except:
-            raise Exception(f"Variable {id} not declaired")
+            VarDec([Var(None, id), self.children[1]], type).Evaluate(symbolTable)
+        else:
+            value = self.children[1].Evaluate(symbolTable)
+            symbolTable.setSymbolValue(id, value)
 
-        symbolTable.setSymbolValue(id, value.value)
 
       
 class NoOp(Node):
