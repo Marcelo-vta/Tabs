@@ -30,7 +30,7 @@ def gerar_tom_guitarra(freq, duracao_ms, volume=0.5, sample_rate=44100):
     wave_stereo = np.column_stack((wave, wave))
     return pygame.sndarray.make_sound(wave_stereo)
 
-def play(song, timeBetweeenTabs=0.01):
+def play(song, timeBetweeenTabs=.3):
     std_tune = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63]
     pygame.mixer.init(frequency=44100, size=-16, channels=2)
 
@@ -46,11 +46,11 @@ def play(song, timeBetweeenTabs=0.01):
         
         for sound in sounds:
             if sound == "X":
-                time.sleep(.05)
+                # time.sleep(.03)
                 pass
             else:
                 sound.play()
-                time.sleep(0.07)
+                time.sleep(0.06)
         time.sleep(timeBetweeenTabs)
 
 

@@ -1,0 +1,19 @@
+{
+    N1= "| 1-X-X-X-X-X|" ;
+    N2= "| 3-X-X-X-X-X|" ;
+    N3= "| X-1-X-X-X-X|" ;    
+
+    P1= N1 ++ N2 ++ N3 ++ BLANK ++ N2;
+
+    P2= BLANK**;
+
+    N4= "| X-X-1-X-X-X|" ;
+    N5= "| X-X-3-X-X-X|" ;
+    N6= "| X-3-X-X-X-X|" ;
+    N7= "| X-5-X-X-X-X|" ;
+    
+    P3= N1 ++ N2 ++ N3 ++ BLANK ++ N5 ++ BLANK ++ N4 ++ BLANK**6 ++ N7 ++ BLANK ++ N6 ++ BLANK**6 ++ N3 ++ N6 ++ N7 ++ N6 ++ BLANK**9 ++ N3 ++ N6 ++ N7 ++ BLANK ++ N7 ++ BLANK ++ N2;
+
+    play(P1 ++ P2 ++ P3 ++ P2 ++ P1);
+
+}
